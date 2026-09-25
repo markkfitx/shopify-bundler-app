@@ -32,13 +32,43 @@ document.addEventListener('click', async (event) => {
         const variantId = dropdown.value;
         if(!variantId){ message.textContent = 'Please select a variant for all items'; return; }
 
-        const existingItem = items.find(item => item.variantId === variantId);
+        const existingItem = items.find(item => item.id === variantId);
         if(existingItem){
             existingItem.quantity += 1;
         } else {
-            items.push({ variantId, quantity: 1 });
+            items.push({ id: variantId, quantity: 1 });
         }
     }
     
-  message.textContent = "Selections ready. Check the browser console.";
+    if(items.length === 0){ message.textContent = 'Please select at least one item'; return; }
+
+    const originalText = button.textContent;
+    const storeRoot = window.Shopify.routes.root;
+
+    button.disabled = true;
+    button.textContent = 'Adding to cart...';
+    message.textContent = '';
+
+    try{
+        const response = await fetch(storeRoot + "cart/add.js", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ items })
+        });
+        const result = await response.json();
+        if(!response.ok){
+            throw new Error(
+                result.description || result.message || "Unable to add these items."
+            );
+        }
+        window.location.assign(storeRoot + "cart");
+
+    }catch(error){
+        message.textContent = `${error.message} Check your cart before trying again.`;
+    } finally{
+        button.disabled = false;
+        button.textContent = originalText;
+    }
 });
