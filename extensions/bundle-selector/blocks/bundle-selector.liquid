@@ -6,59 +6,44 @@
     <h1>{{ product.title | escape }}</h1>
     <p>From {{ product.price | money }}</p>
 
-    <fieldset>
-        <legend>Select bundle for {{ product.title | escape }}</legend>
+    <fieldset class="bundle-form__input">
+        <legend class="visually-hideen">Select bundle for {{ product.title | escape }}</legend>
 
         {% comment %} Bundle size radios: 1 = Single, 2 = Duo, 3 = Trio {% endcomment %}
-        {% for quantity in (1..3) %}
-            <label>
+        {% for item in (1..3) %}
+            <div class="bundle-option">
                 <input
                     type="radio"
                     name="bundle"
-                    id="bundle-quantity-{{ block.id }}"
+                    id="bundle-quantity-{{ block.id }}-{{ item }}"
+                    class="bundle-selector-input"
                     data-bundle-quantity
-                    value="{{ quantity }}"
-                    {% if product.selected_or_first_available_variant.quantity == 1 %}checked{% endif %}
+                    value="{{ item }}"
+                    {% if item == 1 %}checked{% endif %}
                 >
-                <span>
-                    {% case quantity %}
-                        {% when 1 %}Single
-                        {% when 2 %}Duo
-                        {% when 3 %}Trio
-                    {% endcase %}
-                </span>
-            </label>
-        {% endfor %}
-
-        {% comment %}
-          One variant dropdown per possible bundle slot.
-          Slots beyond the selected size are hidden/disabled by JS.
-        {% endcomment %}
-        {% for item_number in (1..3) %}
-            <div
-                data-bundle-item="{{ item_number }}"
-                {% if item_number > 1 %}hidden{% endif %}
-            >
-                <label for="bundle-variant-{{ block.id }}-{{ item_number }}">
-                    Item {{ item_number }}
+                <label for="bundle-quantity-{{ block.id }}-{{ item }}">
+                    <span>
+                        {% case item %}
+                            {% when 1 %}Single
+                            {% when 2 %}Duo
+                            {% when 3 %}Trio
+                        {% endcase %}
+                    </span>
                 </label>
-
-                <select
-                    id="bundle-variant-{{ block.id }}-{{ item_number }}"
-                    {% if item_number > 1 %}disabled{% endif %}
-                >
-                    <option value="" selected disabled>Choose a variant</option>
-
-                    {% for variant in product.variants %}
-                        <option
-                            value="{{ variant.id }}"
-                            {% unless variant.available %}disabled{% endunless %}
-                        >
-                            {{ variant.title | escape }}
-                            {% unless variant.available %} — Sold out{% endunless %}
-                        </option>
+                {% comment %}
+                One variant dropdown per possible bundle slot.
+                Slots beyond the selected size are hidden/disabled by JS.
+                {% endcomment %}
+                 <div class="bundle-option__content">
+                    {% for item_number in (1..item) %}
+                        {% render "variant-selector",
+                            product: product,
+                            item_number: item_number,
+                            bundle_quantity: item,
+                            block_id: block.id
+                        %}
                     {% endfor %}
-                </select>
+                </div>
             </div>
         {% endfor %}
     </fieldset>
@@ -75,6 +60,7 @@
   "name": "Bundle Selector",
   "target": "section",
   "javascript": "bundle-selector.js",
+  "stylesheet": "base.css",
   "enabled_on": {
     "templates": ["product"],
   },

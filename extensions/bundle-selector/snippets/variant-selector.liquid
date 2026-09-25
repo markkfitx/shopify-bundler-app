@@ -1,0 +1,24 @@
+<div class="bundle-item" data-bundle-item="{{ item_number }}">
+    <label for="bundle-variant-{{ block_id }}-{{ bundle_quantity }}-{{ item_number }}">
+      Item {{ item_number }}
+    </label>
+  
+    <select
+      id="bundle-variant-{{ block_id }}-{{ bundle_quantity }}-{{ item_number }}"
+      data-variant-select
+    >
+      <option value="" selected disabled>
+        Choose a variant
+      </option>
+  
+      {% for variant in product.variants %}
+        <option
+          value="{{ variant.id }}" {% unless variant.available %}disabled{% endunless %} >
+          {{ variant.title | escape }}
+          {% unless variant.available %}
+            — Sold out
+          {% endunless %}
+        </option>
+      {% endfor %}
+    </select>
+</div>
