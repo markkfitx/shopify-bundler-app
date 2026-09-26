@@ -1,20 +1,87 @@
+.bundle-option{
+    display: block;
+    min-inline-size: min-content;
+    margin-inline: 2px;
+    border-width: 2px;
+    border-style: groove;
+    border-color: threedface;
+    border-radius: 5px;
+    border-image: initial;
+    background-color: rgba(247, 225, 251, 0.749)
+}
+
 .bundle-option input[type="radio"]{
     opacity:0;
     position:absolute;
     pointer-events:none;
 }
+.bundle-option:has(input[type="radio"]:checked){
+    background-color: white;
+}
 
 /* Content is a sibling of the radio, not a child — use ~ not > */
 .bundle-option input[type="radio"]:checked ~ .bundle-option__content {
-  display: block;
+  display: flex;
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 0.25rem;
 }
+.bundle-option input[type="radio"] + label {
+    display:inline-block;
+    width: 100%;
+    padding: 0.25rem;
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    justify-content: space-between;
+}
+.bundle-option input[type="radio"] + label .bundle-quantity-label-wrapper{
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    justify-content: space-between;
+    width:100%;
+}
+.bundle-quantity-label-wrapper span{
+    font-weight: 400;
+    font-size:12px;
+}
+.bundle-option input[type="radio"] + label .bundle-quantity-label-wrapper .bundle-sublabel-wrapper{
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+.bundle-option input[type="radio"] + label img {
+    aspect-ratio:1/1;
 
+}
 .bundle-option input[type="radio"]:checked + label {
-  border-color: currentColor;
+    border-color: currentColor;
     font-weight: 600;
-    border: 2px solid currentColor;
   }
 
 .bundle-option__content {
-  display: none;
+    display: none;
+    padding-block: 0.35em 0.625em;
+    padding-inline: 0.75em;
+}
+.bundle-form__input{
+    display: flex;
+    flex-flow: column nowrap;
+    gap: 0.5rem;
+}
+.bundle-item .bundle-item__option{
+    display: inline-flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    justify-content: flex-start;
+    gap:0.25rem;
+}
+
+.bundle-item .bundle-item__option select{
+    padding: 0.85rem 0.65rem;
+    border-radius: 5px;
 }

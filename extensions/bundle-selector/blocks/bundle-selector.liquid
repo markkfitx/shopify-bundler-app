@@ -7,8 +7,8 @@
     <p>From {{ product.price | money }}</p>
 
     <fieldset class="bundle-form__input">
-        <legend class="visually-hideen">Select bundle for {{ product.title | escape }}</legend>
-
+        <legend class="visually-hidden">Select bundle for {{ product.title | escape }}</legend>
+        <input type="hidden" name="product_id" data-product-id value="{{ product.id }}" />
         {% comment %} Bundle size radios: 1 = Single, 2 = Duo, 3 = Trio {% endcomment %}
         {% for item in (1..3) %}
             <div class="bundle-option">
@@ -22,37 +22,47 @@
                     {% if item == 1 %}checked{% endif %}
                 >
                 <label for="bundle-quantity-{{ block.id }}-{{ item }}">
-                    <span>
-                        {% case item %}
-                            {% when 1 %}Single
-                            {% when 2 %}Duo
-                            {% when 3 %}Trio
-                        {% endcase %}
-                    </span>
+                    {{ product.featured_image | image_url: width: 50 | image_tag }}
+                    <div class="bundle-quantity-label-wrapper">
+                        <div class="bundle-sublabel-wrapper">
+                            <strong>
+                                {% case item %}
+                                {% when 1 %}Single
+                                {% when 2 %}Duo
+                                {% when 3 %}Trio
+                                {% endcase %}
+                            </strong>
+                            <span>Standard Price</span>
+                        </div>
+                        {{ product.price | money }}
+                    </div>
                 </label>
                 {% comment %}
                 One variant dropdown per possible bundle slot.
                 Slots beyond the selected size are hidden/disabled by JS.
                 {% endcomment %}
-                 <div class="bundle-option__content">
-                    {% for item_number in (1..item) %}
-                        {% render "variant-selector",
-                            product: product,
-                            item_number: item_number,
-                            bundle_quantity: item,
-                            block_id: block.id
-                        %}
-                    {% endfor %}
-                </div>
+                <div class="bundle-option__content" data-bundle-items></div>
             </div>
         {% endfor %}
     </fieldset>
 
+    <template data-bundle-item-template>
+        {% render "variant-selector",
+            product: product,
+            block_id: block.id
+        %}
+    </template>
+
     <div class="bundle-selector-footer">
         {% comment %} data-bundle-add-to-cart is the hook used by bundle-selector.js {% endcomment %}
-        <button type="buton" class="button" data-bundle-add-to-cart>Add to cart</button>
+        <button type="button" class="button" data-bundle-add-to-cart>Add to cart</button>
         <p data-bundle-message role="status"></p>
     </div>
+
+    {% comment %} Must live inside .bundle-selector so JS can find it via bundle.querySelector {% endcomment %}
+    <script type="application/json" data-product-variants>
+      {{ product.variants | json }}
+    </script>
 </div>
 
 {% schema %}
